@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func TestDuration(t *testing.T) {
@@ -63,15 +62,6 @@ func TestDuration(t *testing.T) {
 	b, err = pp.MarshalJSON()
 	assert.NoError(t, err)
 	assert.Equal(t, bj, b)
-
-	dur := Duration(42)
-	bsonData, err := bson.Marshal(&dur)
-	assert.NoError(t, err)
-
-	var durCopy Duration
-	err = bson.Unmarshal(bsonData, &durCopy)
-	assert.NoError(t, err)
-	assert.Equal(t, dur, durCopy)
 }
 
 func testDurationParser(t *testing.T, toParse string, expected time.Duration) {

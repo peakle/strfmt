@@ -17,11 +17,8 @@ package strfmt
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func init() {
@@ -113,28 +110,6 @@ func (d *Date) UnmarshalJSON(data []byte) error {
 	}
 	*d = Date(tt)
 	return nil
-}
-
-func (d Date) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": d.String()})
-}
-
-func (d *Date) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if data, ok := m["data"].(string); ok {
-		rd, err := time.Parse(RFC3339FullDate, data)
-		if err != nil {
-			return err
-		}
-		*d = Date(rd)
-		return nil
-	}
-
-	return errors.New("couldn't unmarshal bson bytes value as Date")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.

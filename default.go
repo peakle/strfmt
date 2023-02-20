@@ -18,14 +18,12 @@ import (
 	"database/sql/driver"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/mail"
 	"regexp"
 	"strings"
 
 	"github.com/asaskevich/govalidator"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 const (
@@ -287,29 +285,6 @@ func (b *Base64) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (b Base64) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": b.String()})
-}
-
-// UnmarshalBSON document into this value
-func (b *Base64) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if bd, ok := m["data"].(string); ok {
-		vb, err := base64.StdEncoding.DecodeString(bd)
-		if err != nil {
-			return err
-		}
-		*b = Base64(vb)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as base64")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (b *Base64) DeepCopyInto(out *Base64) {
 	*out = *b
@@ -377,25 +352,6 @@ func (u *URI) UnmarshalJSON(data []byte) error {
 	}
 	*u = URI(uristr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (u URI) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *URI) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = URI(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as uri")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -467,25 +423,6 @@ func (e *Email) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (e Email) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": e.String()})
-}
-
-// UnmarshalBSON document into this value
-func (e *Email) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*e = Email(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as email")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (e *Email) DeepCopyInto(out *Email) {
 	*out = *e
@@ -553,25 +490,6 @@ func (h *Hostname) UnmarshalJSON(data []byte) error {
 	}
 	*h = Hostname(hstr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (h Hostname) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": h.String()})
-}
-
-// UnmarshalBSON document into this value
-func (h *Hostname) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*h = Hostname(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as hostname")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -643,25 +561,6 @@ func (u *IPv4) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (u IPv4) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *IPv4) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = IPv4(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as ipv4")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (u *IPv4) DeepCopyInto(out *IPv4) {
 	*out = *u
@@ -729,25 +628,6 @@ func (u *IPv6) UnmarshalJSON(data []byte) error {
 	}
 	*u = IPv6(ustr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (u IPv6) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *IPv6) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = IPv6(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as ipv6")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -819,25 +699,6 @@ func (u *CIDR) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (u CIDR) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *CIDR) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = CIDR(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as CIDR")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (u *CIDR) DeepCopyInto(out *CIDR) {
 	*out = *u
@@ -905,25 +766,6 @@ func (u *MAC) UnmarshalJSON(data []byte) error {
 	}
 	*u = MAC(ustr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (u MAC) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *MAC) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = MAC(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as MAC")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -998,25 +840,6 @@ func (u *UUID) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (u UUID) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *UUID) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = UUID(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as UUID")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (u *UUID) DeepCopyInto(out *UUID) {
 	*out = *u
@@ -1087,25 +910,6 @@ func (u *UUID3) UnmarshalJSON(data []byte) error {
 	}
 	*u = UUID3(ustr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (u UUID3) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *UUID3) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = UUID3(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as UUID3")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -1180,25 +984,6 @@ func (u *UUID4) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (u UUID4) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *UUID4) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = UUID4(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as UUID4")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (u *UUID4) DeepCopyInto(out *UUID4) {
 	*out = *u
@@ -1269,25 +1054,6 @@ func (u *UUID5) UnmarshalJSON(data []byte) error {
 	}
 	*u = UUID5(ustr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (u UUID5) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *UUID5) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = UUID5(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as UUID5")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -1362,25 +1128,6 @@ func (u *ISBN) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (u ISBN) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *ISBN) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = ISBN(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as ISBN")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (u *ISBN) DeepCopyInto(out *ISBN) {
 	*out = *u
@@ -1451,25 +1198,6 @@ func (u *ISBN10) UnmarshalJSON(data []byte) error {
 	}
 	*u = ISBN10(ustr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (u ISBN10) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *ISBN10) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = ISBN10(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as ISBN10")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -1544,25 +1272,6 @@ func (u *ISBN13) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (u ISBN13) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *ISBN13) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = ISBN13(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as ISBN13")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (u *ISBN13) DeepCopyInto(out *ISBN13) {
 	*out = *u
@@ -1633,25 +1342,6 @@ func (u *CreditCard) UnmarshalJSON(data []byte) error {
 	}
 	*u = CreditCard(ustr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (u CreditCard) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *CreditCard) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = CreditCard(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as CreditCard")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -1726,25 +1416,6 @@ func (u *SSN) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (u SSN) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *SSN) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*u = SSN(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as SSN")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (u *SSN) DeepCopyInto(out *SSN) {
 	*out = *u
@@ -1815,25 +1486,6 @@ func (h *HexColor) UnmarshalJSON(data []byte) error {
 	}
 	*h = HexColor(ustr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (h HexColor) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": h.String()})
-}
-
-// UnmarshalBSON document into this value
-func (h *HexColor) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*h = HexColor(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as HexColor")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.
@@ -1908,25 +1560,6 @@ func (r *RGBColor) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalBSON document from this value
-func (r RGBColor) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": r.String()})
-}
-
-// UnmarshalBSON document into this value
-func (r *RGBColor) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*r = RGBColor(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as RGBColor")
-}
-
 // DeepCopyInto copies the receiver and writes its value into out.
 func (r *RGBColor) DeepCopyInto(out *RGBColor) {
 	*out = *r
@@ -1998,25 +1631,6 @@ func (r *Password) UnmarshalJSON(data []byte) error {
 	}
 	*r = Password(ustr)
 	return nil
-}
-
-// MarshalBSON document from this value
-func (r Password) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": r.String()})
-}
-
-// UnmarshalBSON document into this value
-func (r *Password) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		*r = Password(ud)
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as Password")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.

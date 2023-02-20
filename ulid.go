@@ -4,13 +4,11 @@ import (
 	cryptorand "crypto/rand"
 	"database/sql/driver"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"sync"
 
 	"github.com/oklog/ulid"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // ULID represents a ulid string format
@@ -159,29 +157,6 @@ func (u *ULID) UnmarshalJSON(data []byte) error {
 	}
 	u.ULID = id
 	return nil
-}
-
-// MarshalBSON document from this value
-func (u ULID) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(bson.M{"data": u.String()})
-}
-
-// UnmarshalBSON document into this value
-func (u *ULID) UnmarshalBSON(data []byte) error {
-	var m bson.M
-	if err := bson.Unmarshal(data, &m); err != nil {
-		return err
-	}
-
-	if ud, ok := m["data"].(string); ok {
-		id, err := ulid.ParseStrict(ud)
-		if err != nil {
-			return fmt.Errorf("couldn't parse bson bytes as ULID: %w", err)
-		}
-		u.ULID = id
-		return nil
-	}
-	return errors.New("couldn't unmarshal bson bytes as ULID")
 }
 
 // DeepCopyInto copies the receiver and writes its value into out.

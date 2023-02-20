@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 var (
@@ -244,35 +243,6 @@ func TestDateTime_Scan_Failed(t *testing.T) {
 
 	err = pp.Scan(float64(0))
 	assert.Error(t, err)
-}
-
-func TestDateTime_BSON(t *testing.T) {
-	for caseNum, example := range testCases {
-		t.Logf("Case #%d", caseNum)
-		dt := DateTime(example.time)
-
-		bsonData, err := bson.Marshal(&dt)
-		assert.NoError(t, err)
-
-		var dtCopy DateTime
-		err = bson.Unmarshal(bsonData, &dtCopy)
-		assert.NoError(t, err)
-		// BSON DateTime type loses timezone information, so compare UTC()
-		assert.Equal(t, time.Time(dt).UTC(), time.Time(dtCopy).UTC())
-
-		// Check value marshaling explicitly
-		m := bson.M{"data": dt}
-		bsonData, err = bson.Marshal(&m)
-		assert.NoError(t, err)
-
-		var mCopy bson.M
-		err = bson.Unmarshal(bsonData, &mCopy)
-		assert.NoError(t, err)
-
-		data, ok := m["data"].(DateTime)
-		assert.Equal(t, true, ok)
-		assert.Equal(t, time.Time(dt).UTC(), time.Time(data).UTC())
-	}
 }
 
 func TestDeepCopyDateTime(t *testing.T) {
